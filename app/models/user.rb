@@ -13,3 +13,4 @@ class User < ApplicationRecord
     object.user_id == id
   end
 end
+
