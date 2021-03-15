@@ -1,8 +1,9 @@
 FactoryBot.define do
   factory :task do
-    title {"wasshoi"}
+    sequence(:title, "title_1")
     content {"hogehoge"}
-    status {1}
-    user
+    status {:todo}
+    deadline { 1.week.from_now }
+    association :user
   end
 end
