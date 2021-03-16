@@ -27,21 +27,24 @@ RSpec.describe "Users", type: :system do
           fill_in 'Password', with: 'password'
           fill_in 'Password confirmation', with: 'password'
           click_button 'SignUp'
+          expect(page).to have_content '1 error prohibited this user from being saved' #追記
           expect(current_path).to eq users_path
           expect(page).to have_content("Email can't be blank")
         end
       end
       context '登録済のメールアドレスを使用' do
         it 'ユーザーの新規作成が失敗する' do
-          user = create(:user)
+          exist_user = create(:user) #exist_user追記
           visit sign_up_path
           click_link 'SignUp'
-          fill_in 'Email', with: user.email
+          fill_in 'Email', with: exist_user.email #追記
           fill_in 'Password', with: 'password'
           fill_in 'Password confirmation', with: 'password'
           click_button 'SignUp'
           expect(current_path).to eq users_path
+          expect(page).to have_content '1 error prohibited this user from being saved' #追記
           expect(page).to have_content("Email has already been taken")
+          expect(page).to have_field 'Email', with: exist_user.email #追記 exist_userのメールがフィールドに入っているか
         end
       end
     end
@@ -79,6 +82,7 @@ RSpec.describe "Users", type: :system do
           fill_in 'Password confirmation', with: 'password'
           click_button 'Update'
           expect(current_path).to eq user_path(user)
+          expect(page).to have_content('1 error prohibited this user from being saved') #追記
           expect(page).to have_content("Email can't be blank")
         end
       end
@@ -90,6 +94,7 @@ RSpec.describe "Users", type: :system do
           fill_in 'Password confirmation', with: 'password'
           click_button 'Update'
           expect(current_path).to eq user_path(user)
+          expect(page).to have_content('1 error prohibited this user from being saved') #追記
           expect(page).to have_content("Email has already been taken")
         end
       end
@@ -104,9 +109,14 @@ RSpec.describe "Users", type: :system do
     describe 'マイページ' do
       context 'タスクを作成' do
         it '新規作成したタスクが表示される' do
-          create(:task, title: "テスト", content: "作成", status: :todo, user: user)
+          create(:task, title: "テスト", status: :todo, user: user)
           visit user_path(user)
           expect(page).to have_content("You have 1 task.")
+          expect(page).to have_content('テスト') #追記
+          expect(page).to have_content('todo') #追記
+          expect(page).to have_link('Show') #追記
+          expect(page).to have_link('Edit') #追記
+          expect(page).to have_link('Destroy') #追記
         end
       end
     end
